@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.SitedataMapper">
+  <resultMap id="BaseResultMap" type="com.model.Sitedata">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="viewCount" jdbcType="INTEGER" property="viewcount" />
+    <result column="testCount" jdbcType="INTEGER" property="testcount" />
+    <result column="time" jdbcType="TIMESTAMP" property="time" />
+    <result column="registerCount" jdbcType="INTEGER" property="registercount" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, viewCount, testCount, time, registerCount
+  </sql>
+  <select id="selectByExample" parameterType="com.model.SitedataExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    *
+    from sitedata
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+  *
+    from sitedata
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from sitedata
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.model.SitedataExample">
+    delete from sitedata
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.model.Sitedata">
+    insert into sitedata (id, viewCount, testCount, 
+      time, registerCount)
+    values (#{id,jdbcType=VARCHAR}, #{viewcount,jdbcType=INTEGER}, #{testcount,jdbcType=INTEGER}, 
+      #{time,jdbcType=TIMESTAMP}, #{registercount,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.model.Sitedata">
+    insert into sitedata
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="viewcount != null">
+        viewCount,
+      </if>
+      <if test="testcount != null">
+        testCount,
+      </if>
+      <if test="time != null">
+        time,
+      </if>
+      <if test="registercount != null">
+        registerCount,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="viewcount != null">
+        #{viewcount,jdbcType=INTEGER},
+      </if>
+      <if test="testcount != null">
+        #{testcount,jdbcType=INTEGER},
+      </if>
+      <if test="time != null">
+        #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="registercount != null">
+        #{registercount,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.model.SitedataExample" resultType="java.lang.Long">
+    select count(*) from sitedata
+    <if test="_parameter != null">
+     *
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update sitedata
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.viewcount != null">
+        viewCount = #{record.viewcount,jdbcType=INTEGER},
+      </if>
+      <if test="record.testcount != null">
+        testCount = #{record.testcount,jdbcType=INTEGER},
+      </if>
+      <if test="record.time != null">
+        time = #{record.time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.registercount != null">
+        registerCount = #{record.registercount,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update sitedata
+    set id = #{record.id,jdbcType=VARCHAR},
+      viewCount = #{record.viewcount,jdbcType=INTEGER},
+      testCount = #{record.testcount,jdbcType=INTEGER},
+      time = #{record.time,jdbcType=TIMESTAMP},
+      registerCount = #{record.registercount,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.model.Sitedata">
+    update sitedata
+    <set>
+      <if test="viewcount != null">
+        viewCount = #{viewcount,jdbcType=INTEGER},
+      </if>
+      <if test="testcount != null">
+        testCount = #{testcount,jdbcType=INTEGER},
+      </if>
+      <if test="time != null">
+        time = #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="registercount != null">
+        registerCount = #{registercount,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.model.Sitedata">
+    update sitedata
+    set viewCount = #{viewcount,jdbcType=INTEGER},
+      testCount = #{testcount,jdbcType=INTEGER},
+      time = #{time,jdbcType=TIMESTAMP},
+      registerCount = #{registercount,jdbcType=INTEGER}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

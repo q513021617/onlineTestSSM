@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo.xsd">
+
+    <context:component-scan base-package="com.service"/>
+    <context:component-scan base-package="com.serviceImpl"/>
+    <context:component-scan base-package="com.dao"/>
+    <import resource="classpath:shiro-context.xml"/>
+    <!-- 引入mongodb的相关配置 -->
+    <import resource="classpath:spring-mongodb.xml"/>
+
+    <!-- 多部分文件上传 -->
+
+
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://111.230.27.166:3306/onlineTest_zhiyi?useSSL=false&amp;serverTimezone=UTC"/>
+        <property name="username" value="onlineTest_zhiyi"/>
+
+        <property name="password" value="NnNdHCbTY8sDS7Zi"/>
+        <!--最大连接数-->
+        <property name="maxTotal" value="30"/>
+        <!--最大空闲数-->
+        <property name="maxIdle" value="10"/>
+        <!--初始化连接数-->
+        <property name="initialSize" value="5"/>
+    </bean>
+
+    <!--添加事务支持-->
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!--开启事务注解-->
+    <tx:annotation-driven transaction-manager="txManager"/>
+
+
+    <!--配置mybatis工厂-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!--mybatis核心配置文件-->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <property name="mapperLocations" value="classpath:mapper/*.xml"/>
+
+        <property name="plugins">
+            <array>
+                <bean class="com.github.pagehelper.PageInterceptor">
+                    <!-- 这里的几个配置主要演示如何使用，如果不理解，一定要去掉下面的配置 -->
+                    <property name="properties">
+                        <value>
+                            helperDialect=mysql
+                            reasonable=true
+                            supportMethodsArguments=true
+                            params=count=countSql
+                            autoRuntimeDialect=true
+                        </value>
+                    </property>
+                </bean>
+            </array>
+        </property>
+    </bean>
+
+    <!--spring管理mybatis的数据操作接口-->
+    <!--mapper代理开发，使用spring自动扫描mybatis的接口并装配
+    (spring 将指定包中所有被@mapper注解标注的接口自动装配为mybatis的映射接口）-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--mybatis-spring组件的扫描器-->
+
+        <property name="basePackage" value="com.dao"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+
+
+
+    <!--引入MongoDB连接文件-->
+    <context:property-placeholder location="classpath*:mongoDB.properties" ignore-unresolvable="true"/>
+    <!--连接MongoDB服务器-->
+    <mongo:mongo-client id="mongo" host="${mongo.host}" port="${mongo.port}" >
+        <mongo:client-options connections-per-host="${mongo.connectionsPerHost}"
+                              threads-allowed-to-block-for-connection-multiplier="${mongo.threadsAllowedToBlockForConnectionMultiplier}"
+                              connect-timeout="${mongo.connectTimeout}"
+                              max-wait-time="${mongo.maxWaitTime}"
+                              socket-keep-alive="${mongo.socketKeepAlive}"
+                              socket-timeout="${mongo.socketTimeout}"/>
+    </mongo:mongo-client>
+
+    <mongo:db-factory id="mongoDbFactory"  dbname="${mongo.dbname}"  mongo-ref="mongo"/>
+
+
+    <!--配置mongoTemplate-->
+    <!-- mongodb的主要操作对象，所有对mongodb的增删改查的操作都是通过它完成-->
+    <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+        <constructor-arg name="mongoDbFactory" ref="mongoDbFactory"/>
+    </bean>
+
+
+
+
+
+
+
+</beans>

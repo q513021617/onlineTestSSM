@@ -1,0 +1,122 @@
+<!DOCTYPE web-app PUBLIC
+        "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee  http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         id="WebApp_ID" version="3.1">
+
+  <display-name>onlineTest Web Application</display-name>
+
+  <context-param>
+    <!--加载application.xml文件-->
+    <param-name>contextConfigLocation</param-name>
+    <param-value>classpath*:application.xml</param-value>
+  </context-param>
+
+  <!--指定ContextLoaderListener启动spring-->
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+
+
+
+  <!--配置DispatcherServlet-->
+  <servlet>
+    <servlet-name>springmvc</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <init-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>/WEB-INF/spring-config/springmvc-servlet.xml</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+
+  <servlet-mapping>
+    <servlet-name>springmvc</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>springmvc</servlet-name>
+    <url-pattern>/web/loginpage</url-pattern>
+  </servlet-mapping>
+<welcome-file-list>
+  <welcome-file>web/loginpage</welcome-file>
+</welcome-file-list>
+  <!-- 加载log4j配置文件 -->
+  <!--log4j2-begin-->
+  <!--<listener>-->
+  <!--<listener-class>org.apache.logging.log4j.web.Log4jServletContextListener</listener-class>-->
+  <!--</listener>-->
+  <!--<filter>-->
+  <!--<filter-name>log4jServletFilter</filter-name>-->
+  <!--<filter-class>org.apache.logging.log4j.web.Log4jServletFilter</filter-class>-->
+  <!--</filter>-->
+  <!--<filter-mapping>-->
+  <!--<filter-name>log4jServletFilter</filter-name>-->
+  <!--<url-pattern>/*</url-pattern>-->
+  <!--<dispatcher>REQUEST</dispatcher>-->
+  <!--<dispatcher>FORWARD</dispatcher>-->
+  <!--<dispatcher>INCLUDE</dispatcher>-->
+  <!--<dispatcher>ERROR</dispatcher>-->
+  <!--</filter-mapping>-->
+  <!--log4j2-end-->
+
+  <error-page>
+    <error-code>404</error-code>
+    <!-- 这里可以为servlet，不一定非要静态资源 -->
+    <location>/404/</location>
+  </error-page>
+
+  <error-page>
+    <error-code>403</error-code>
+    <!-- 这里可以为servlet，不一定非要静态资源 -->
+    <location>/permison/</location>
+  </error-page>
+  <!-- 配置由Spring提供的过滤器，用于整合shiro框架 -->
+  <!-- 在项目启动的过程中，当前过滤器会从Spring工厂中提取同名对象 -->
+  <filter>
+    <filter-name>shiroFilter</filter-name>
+    <filter-class>
+      org.springframework.web.filter.DelegatingFilterProxy
+    </filter-class>
+
+    <init-param>
+      <param-name>targetFilterLifecycle</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>shiroFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
+    <dispatcher>INCLUDE</dispatcher>
+    <dispatcher>ERROR</dispatcher>
+  </filter-mapping>
+
+
+  <!--避免中文乱码-->
+  <filter>
+    <filter-name>charcterEncodingFilter</filter-name>
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>UTF-8</param-value>
+    </init-param>
+    <init-param>
+      <param-name>forceEncoding</param-name>
+      <param-value>true</param-value>
+
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>charcterEncodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+</web-app>

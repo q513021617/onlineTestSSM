@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo.xsd">
+
+
+<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+    <property name="securityManager" ref="securityManager" /> <!--加载管理器-->
+    <property name="loginUrl" value="/adminlogin/" />    <!--没有登录的时候，跳转到这个页面-->
+    <property name="unauthorizedUrl" value="/nopermission/" /> <!--当没有权限的时候，跳转到这个url-->
+
+    <property name="filters">
+        <map>
+            <!--该Key值得使用在
+            自定义FilterChainDefinitionMapFactory类中字符串拼接
+            map.put(permission.getResource(), "perms["+permission.getSn()+"]");//需要判断权限的路径
+            -->
+            <entry key="perms">
+                <bean class="com.Shiro.ShiroPermsFilter"/>
+            </entry>
+        </map>
+    </property>
+
+
+    <property name="filterChainDefinitions">
+        <value>
+            /login/ = anon <!--可以不需要登录-->
+            /rigister/ = anon
+            /adminlogin/ = anon <!--可以不需要登录-->
+            /web/kskm = authc
+            /web/grade = authc
+            /web/main = authc
+
+            /web/paper = anon
+            <!--/user/readName = authc, perms[/readName]  &lt;!&ndash; perms 表示需要该权限才能访问的页面 &ndash;&gt;-->
+            <!--/user/readData = authc, perms[/readData]-->
+            /Admin/* = authc <!-- authc 表示需要认证才能访问的页面 -->
+            /Admin/Score/* = authc
+            /Admin/Subject/* = authc
+            /Admin/Testing/* = authc
+            /Admin/Testpaper/* = authc
+            /Admin/TopicItem/* = authc
+            /Admin/User/* = authc
+
+            /Mobile/* = authc <!-- authc 表示需要认证才能访问的页面 -->
+            /Mobile/Score/* = authc
+            /Mobile/Subject/* = authc
+            /Mobile/Testing/* = authc
+            /Mobile/Testpaper/* = authc
+            /Mobile/TopicItem/* = authc
+            /Mobile/User/* = authc
+        </value>
+    </property>
+</bean>
+
+        <!-- 自定义Realm -->
+<bean id="myShiroRealm" class="com.Shiro.MyShiroReaml">
+<!-- businessManager 用来实现用户名密码的查询 -->
+<property name="shiroService" ref="accountService" />
+</bean>
+
+<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+<!-- 注入realm -->
+<property name="realm" ref="myShiroRealm"/>
+</bean>
+
+        <!--声明一个Service 注入到自定义Realm-->
+<bean id="accountService" class="com.serviceImpl.ShiroServiceImpl"/>
+        <!-- <bean id="shiroCacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+            <property name="cacheManager" ref="cacheManager" /> </bean> -->
+        </beans>
